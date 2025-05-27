@@ -1,7 +1,7 @@
 {
   "name": "exames",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "homepage": "https://github.com/LuizCarlosfs.github.io",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
