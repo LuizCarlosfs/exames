@@ -1,38 +1,282 @@
 .App {
+  font-family: Arial, sans-serif;
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+  background-color: #f0f2f5;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  justify-content: space-between;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.App-header {
+  background-color: #282c34;
+  padding: 5px;
   color: white;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  border-radius: 8px;
 }
 
-.App-link {
-  color: #61dafb;
+.App-main {
+  flex-grow: 1;
+  width: 100%;
+  max-width: 800px;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+.input-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.input-form label {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #333;
+}
+
+.input-form input[type="text"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1em;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-form button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.input-form button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.input-form button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #dc3545;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 30px;
+  color: #555;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.results-container {
+  margin-top: 40px;
+  text-align: left;
+  border-top: 1px solid #eee;
+  padding-top: 30px;
+}
+
+.results-container h2 {
+  color: #28a745;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.agent-output-section {
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.agent-output-section h3 {
+  color: #007bff;
+  margin-top: 0;
+  margin-bottom: 15px;
+  border-bottom: 1px dashed #cce5ff;
+  padding-bottom: 10px;
+}
+
+.agent-output-section pre {
+  white-space: pre-wrap; /* Garante que o texto quebre dentro da tag pre */
+  word-wrap: break-word; /* Quebra palavras longas se necessário */
+  background-color: #e9ecef;
+  padding: 15px;
+  border-radius: 4px;
+  font-size: 0.95em;
+  line-height: 1.6;
+  color: #343a40;
+  overflow-x: auto; /* Adiciona rolagem para linhas muito longas se não quebrarem */
+}
+
+.draft-post {
+  border: 2px dashed #ffc107;
+}
+
+.final-post {
+  background-color: #d4edda;
+  border-color: #28a745;
+  padding: 25px;
+}
+
+.final-post h3 {
+  color: #28a745;
+  border-bottom-color: #98e6ae;
+}
+
+.ready-to-publish {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.App-footer {
+  margin-top: 40px;
+  padding: 20px;
+  color: #666;
+  font-size: 0.9em;
+  width: 100%;
+  background-color: #e9ecef;
+  border-top: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+/* src/App.css */
+
+/* ... (estilos existentes) ... */
+
+.input-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Espaço entre os grupos de campos */
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.input-form label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.input-form input[type="text"],
+.input-form input[type="number"],
+.input-form select,
+.input-form textarea {
+  width: 100%; /* Ocupa a largura total do seu contêiner */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* Inclui padding e borda na largura total */
+  font-size: 1em;
+}
+
+.input-form input[type="file"] {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+}
+
+.input-form textarea {
+  resize: vertical; /* Permite redimensionamento vertical */
+  min-height: 80px; /* Altura mínima para o textarea */
+}
+
+/* Estilos para campos em linha */
+.inline-fields {
+  display: flex;
+  flex-wrap: wrap; /* Permite quebrar linha em telas pequenas */
+  gap: 15px; /* Espaço entre os campos na mesma linha */
+  justify-content: space-between; /* Distribui o espaço entre os itens */
+}
+
+.field-group {
+  flex: 1; /* Faz com que os grupos de campos tentem ocupar o mesmo espaço */
+  min-width: 150px; /* Garante uma largura mínima para evitar que fiquem muito pequenos */
+  display: flex; /* Para alinhar label e input/select verticalmente */
+  flex-direction: column;
+}
+
+/* Ajustes para telas menores */
+@media (max-width: 600px) {
+  .inline-fields {
+    flex-direction: column; /* Em telas menores, os campos ficam em coluna */
+    gap: 10px;
   }
 }
+
+.input-form button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.input-form button[type="submit"]:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.input-form button[type="submit"]:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: red;
+  background-color: #ffe0e0;
+  border: 1px solid red;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 15px;
+  text-align: center;
+}
+
+/* ... (outros estilos como loading-spinner, results-container, etc.) ... */
