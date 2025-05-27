@@ -1,0 +1,28 @@
+/* src/SendToWhatsAppButton.css (ou adicione ao App.css) */
+.whatsapp-button {
+  background-color: #25d366; /* Verde do WhatsApp */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 15px;  /* Adiciona um espaço acima do botão */
+  transition: background-color 0.3s ease;
+  display: flex; /* Para alinhar o ícone/texto, se for adicionar */
+  align-items: center;
+  justify-content: center;
+}
+
+.whatsapp-button:hover {
+  background-color: #1da851; /* Um verde mais escuro no hover */
+}
+
+.whatsapp-button:active {
+  background-color: #178340;
+}
+
+.whatsapp-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

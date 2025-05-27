@@ -1,0 +1,25 @@
+/* src/CopyToClipboardButton.css (ou adicione ao App.css) */
+.copy-button {
+  background-color: #28a745; /* Um tom de verde para "copiar" */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 15px; /* Adiciona um espaço acima do botão */
+  transition: background-color 0.3s ease;
+}
+
+.copy-button:hover {
+  background-color: #218838; /* Um verde mais escuro no hover */
+}
+
+.copy-button:active {
+  background-color: #1e7e34;
+}
+
+.copy-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
