@@ -5,10 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
 import multer from 'multer'; // Para lidar com uploads de arquivos
- import pdfParse from 'pdf-parse'; // Para analisar PDFs
-
-//const pdfParse = require('pdf-parse')
-//import pdfParse from 'pdf-parse/lib/pdf-parse'
+import pdfParse from 'pdf-parse'; // Para analisar PDFs
 
 dotenv.config(); // Carrega variáveis de ambiente do arquivo .env
 
