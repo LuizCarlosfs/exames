@@ -180,8 +180,8 @@ async function agenteRevisor(originalTopic, generatedDraft) {
         4.  **Não Diagnóstico/Tratamento:** Garanta que não há diagnósticos diretos, prescrições de tratamento ou conselhos médicos explícitos.
         5.  **Gramática e Formatação:** Corrija quaisquer erros gramaticais, de ortografia ou formatação.
 
-        Se o rascunho estiver pronto e atender a todos os critérios (especialmente o aviso legal e a ausência de diagnóstico direto), responda apenas:
-        'O parecer está ótimo e pronto para ser revisado por um profissional humano!'
+        Se o rascunho estiver pronto e atender a todos os critérios (especialmente o aviso legal e a ausência de diagnóstico direto), responda :
+        'O parecer está ótimo e pronto para ser revisado por um profissional humano!' e após repita o rascunho final.
 
         Caso haja problemas, aponte-os e sugira melhorias.
         Em todos os casos, antes de transcrever o texto final revisado, coloque a frase:
