@@ -39,7 +39,7 @@ function App() {
       const data = await response.json()
       setResults(data)
     } catch (err) {
-      console.error("Error fetching data:", err)
+      console.error("Erro ao buscar dados:", err)
       setError(err.message)
     } finally {
       setLoading(false)
