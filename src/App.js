@@ -23,7 +23,9 @@ function App() {
     setError(null)
 
     try {
-      const response = await fetch("http://localhost:5000/generate-post", {
+      //const response = await fetch("http://localhost:5000/generate-post", {
+      const response = await fetch(
+        "https://api.render.com/deploy/srv-d0s98i2li9vc73bh1n30?key=1dipM_XmQfM", {
              // Remova o cabeçalho "Content-Type", o navegador o define automaticamente para FormData
         body: formData, // Envie o FormData
       })
