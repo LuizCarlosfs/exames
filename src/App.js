@@ -10,19 +10,20 @@ import LoadingAndErrorDisplay from "./components/LoadingAndErrorDisplay"
 import ResultsDisplay from "./components/ResultsDisplay"
 import Footer from "./components/Footer"
 
-const express = require('express')
-const app = express()
-const port = process.env.PORT || 10000 
+// Importa o express para criar um servidor
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
+const express = require("express")
+const app = express()
+const port = process.env.PORT || 10000
+
+app.get("/", (req, res) => {
+  res.send("Hello World!")
 })
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
-
-
+//  --- fim import express
 
 function App() {
   const [topic, setTopic] = useState("")
@@ -40,7 +41,6 @@ function App() {
       //const response = await fetch("http://localhost:5000/generate-post", {
       const response = await fetch(port, {
         method: "POST",
-             // Remova o cabeçalho "Content-Type", o navegador o define automaticamente para FormData
         body: formData, // Envie o FormData
       })
 
