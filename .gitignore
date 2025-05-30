@@ -23,5 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 /backend/.env
+settings.json
 
 informacoes.txt
