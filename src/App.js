@@ -27,23 +27,18 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState(null)
   const [error, setError] = useState(null)
-  console.log("teste 1")
 
   const handleSubmit = async (formData) => {
     setLoading(true)
     setResults(null)
     setError(null)
 
-    console.log("teste 2")
-
     try {
       // ESTA É A LINHA MAIS IMPORTANTE A SER CORRIGIDA:
       // Você precisa substituir "SUA_URL_DO_BACKEND_NO_RENDER_AQUI" pela URL real do seu serviço no Render.
       // Exemplo: https://seu-projeto-backend.onrender.com/generate-post
       //const response = await fetch("http://localhost:5000/generate-post", {
-      const response = await fetch(
-        "https://exames.onrender.com/generate-post",
-        {
+      const response = await fetch("https://exames.onrender.com/generate-post", {
           method: "POST",
           body: formData, // Envie o FormData
         }
@@ -53,8 +48,6 @@ function App() {
         const errorData = await response.json()
         throw new Error(errorData.error || "Algo deu errado no servidor.")
       }
-
-      console.log("Resposta recebida:", response)
 
       const data = await response.json()
       setResults(data)
