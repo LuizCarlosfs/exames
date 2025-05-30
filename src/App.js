@@ -47,7 +47,7 @@ function App() {
         // Correção aqui: .json() é uma função, precisa dos parênteses
         const errorData = await response.json()
         throw new Error(
-          errorData.error || "Something went wrong on the server."
+          errorData.error || "Algo deu errado no servidor."
         )
       }
 
