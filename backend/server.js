@@ -11,6 +11,10 @@ import {
 import multer from "multer" // Para lidar com uploads de arquivos
 //import pdfParse from "pdf-parse" // Para analisar PDFs
 
+
+
+
+
 dotenv.config() // Carrega variáveis de ambiente do arquivo .env
 
 const app = express()
