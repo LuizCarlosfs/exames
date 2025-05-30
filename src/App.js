@@ -37,7 +37,8 @@ function App() {
       // ESTA É A LINHA MAIS IMPORTANTE A SER CORRIGIDA:
       // Você precisa substituir "SUA_URL_DO_BACKEND_NO_RENDER_AQUI" pela URL real do seu serviço no Render.
       // Exemplo: https://seu-projeto-backend.onrender.com/generate-post
-      const response = await fetch("https://exames.onrender.com", {
+     //const response = await fetch("http://localhost:5000/generate-post", {
+      const response = await fetch("https://exames.onrender.com/generate-post", {
         method: "POST",
         body: formData, // Envie o FormData
       })
