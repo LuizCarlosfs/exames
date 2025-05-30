@@ -9,11 +9,15 @@ import {
   HarmCategory,
 } from "@google/generative-ai"
 import multer from "multer" // Para lidar com uploads de arquivos
-//import pdfParse from "pdf-parse" // Para analisar PDFs
 
-
-
-
+// --- NOVAS IMPORTAÇÕES PARA PDF-TO-TEXT ---
+import { getRawText } from 'pdf-to-text'; // Para analisar PDFs (alternativa)
+import util from 'util'; // Para promisificar getRawText
+const getRawTextPromise = util.promisify(getRawText);
+import fs from 'fs/promises'; // Para operações de arquivo assíncronas
+import path from 'path'; // Para lidar com caminhos de arquivo
+import os from 'os'; // Para obter diretório temporário
+// --- FIM NOVAS IMPORTAÇÕES ---
 
 dotenv.config() // Carrega variáveis de ambiente do arquivo .env
 
@@ -22,6 +26,10 @@ const port = process.env.PORT || 5000
 
 app.use(cors())
 app.use(express.json()) // Para analisar application/json - não é estritamente necessário com multer, mas é boa prática
+
+app.get("/", (req, res) => {
+  res.send("Hello World!")
+})
 
 // Configura o multer para uploads de arquivos
 const upload = multer()
@@ -67,16 +75,10 @@ async function callAgent(agentInstructions, messageText) {
     ],
   })
 
-  // Para agentes que usam ferramentas, nós os configuraríamos aqui.
-  // Por enquanto, como seus agentes Python não usaram explicitamente a configuração de ferramentas do ADK
-  // mas sim o Google Search como uma instrução conceitual, vamos adaptar.
-  // Para realmente usar o Google Search como uma ferramenta, você integraria a Search Tool do SDK.
-  // Para este exemplo, vamos mantê-lo como uma instrução baseada em texto para o modelo "simular" a busca.
-
   const chat = model.startChat({
     history: [],
     generationConfig: {
-      maxOutputTokens: 8000, // Ajuste conforme necessário
+      maxOutputTokens: 8000,
     },
   })
 
@@ -87,38 +89,48 @@ async function callAgent(agentInstructions, messageText) {
   return response.text()
 }
 
+// --- FUNÇÃO extractTextFromFile ATUALIZADA PARA PDF-TO-TEXT ---
 async function extractTextFromFile(file) {
-  if (!file || !file.mimetype) {
-    return "Erro: Nenhum arquivo ou tipo MIME inválido."
-  }
+    if (!file || !file.mimetype) {
+        return "Erro: Nenhum arquivo ou tipo MIME inválido.";
+    }
 
-  if (file.mimetype === "application/pdf") {
-    try {
-      const data = await pdfParse(file.buffer)
-      return data.text
-    } catch (e) {
-      console.error(`Erro ao processar PDF '${file.originalname}':`, e)
-      return `Erro ao processar PDF '${file.originalname}': ${e.message}`
+    if (file.mimetype === 'application/pdf') {
+        let tempFilePath = '';
+        try {
+            const tempDir = os.tmpdir();
+            tempFilePath = path.join(tempDir, `${Date.now()}-${file.originalname}`);
+            await fs.writeFile(tempFilePath, file.buffer);
+
+            const text = await getRawTextPromise(tempFilePath);
+            return text;
+        } catch (e) {
+            console.error(`Erro ao processar PDF '${file.originalname}':`, e);
+            return `Erro ao processar PDF '${file.originalname}': ${e.message}`;
+        } finally {
+            if (tempFilePath) {
+                try {
+                    await fs.unlink(tempFilePath);
+                } catch (cleanUpError) {
+                    console.warn(`Could not delete temporary file ${tempFilePath}:`, cleanUpError);
+                }
+            }
+        }
+    } else if (file.mimetype === 'text/plain' || file.mimetype === 'text/markdown') {
+        try {
+            return file.buffer.toString('utf8');
+        } catch (e) {
+            console.error(`Erro ao processar arquivo de texto '${file.originalname}':`, e);
+            return `Erro ao processar arquivo de texto '${file.originalname}': ${e.message}`;
+        }
+    } else {
+        return `Tipo de arquivo não suportado para extração de texto: '${file.originalname}' (${file.mimetype})`;
     }
-  } else if (
-    file.mimetype === "text/plain" ||
-    file.mimetype === "text/markdown"
-  ) {
-    try {
-      return file.buffer.toString("utf8")
-    } catch (e) {
-      console.error(
-        `Erro ao processar arquivo de texto '${file.originalname}':`,
-        e
-      )
-      return `Erro ao processar arquivo de texto '${file.originalname}': ${e.message}`
-    }
-  } else {
-    return `Tipo de arquivo não suportado para extração de texto: '${file.originalname}' (${file.mimetype})`
-  }
 }
+// --- FIM FUNÇÃO extractTextFromFile ---
 
-// --- FUNÇÕES DOS AGENTES ---
+
+// --- FUNÇÕES DOS AGENTES (restante do código, não alterado) ---
 
 async function agenteBuscador(
   topic,
