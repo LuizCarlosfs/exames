@@ -10,17 +10,20 @@ import LoadingAndErrorDisplay from "./components/LoadingAndErrorDisplay"
 import ResultsDisplay from "./components/ResultsDisplay"
 import Footer from "./components/Footer"
 
-// REMOVA TODO O CÓDIGO ABAIXO QUE PERTENCE AO EXPRESS:
-// const express = require("express")
-// const app = express()
-// const port = process.env.PORT || 10000
-// app.get("/", (req, res) => {
-//   res.send("Hello World!")
-// })
-// app.listen(port, () => {
-//   console.log(`Example app listening on port ${port}`)
-// })
-// --- fim import express
+// Importa o express para criar um servidor
+
+const express = require("express")
+const app = express()
+const port = process.env.PORT || 10000
+
+app.get("/", (req, res) => {
+  res.send("Hello World!")
+})
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
+//  --- fim import express
 
 function App() {
   const [topic, setTopic] = useState("")
@@ -29,22 +32,20 @@ function App() {
   const [error, setError] = useState(null)
 
   const handleSubmit = async (formData) => {
+    // Modificado para receber FormData
     setLoading(true)
     setResults(null)
     setError(null)
 
     try {
-      // ESTA É A LINHA MAIS IMPORTANTE A SER CORRIGIDA:
-      // Você precisa substituir "SUA_URL_DO_BACKEND_NO_RENDER_AQUI" pela URL real do seu serviço no Render.
-      // Exemplo: https://seu-projeto-backend.onrender.com/generate-post
-      const response = await fetch("https://exames.onrender.com", {
+      //const response = await fetch("http://localhost:5000/generate-post", {
+      const response = await fetch(port, {
         method: "POST",
         body: formData, // Envie o FormData
       })
 
       if (!response.ok) {
-        // Correção aqui: .json() é uma função, precisa dos parênteses
-        const errorData = await response.json()
+        const errorData = await response.json
         throw new Error(
           errorData.error || "Something went wrong on the server."
         )
