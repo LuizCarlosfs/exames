@@ -9,7 +9,7 @@ import {
   HarmCategory,
 } from "@google/generative-ai"
 import multer from "multer" // Para lidar com uploads de arquivos
-import pdfParse from "pdf-parse" // Para analisar PDFs
+//import pdfParse from "pdf-parse" // Para analisar PDFs
 
 dotenv.config() // Carrega variáveis de ambiente do arquivo .env
 
