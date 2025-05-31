@@ -29,6 +29,18 @@ const TopicForm = ({ topic, setTopic, loading, handleSubmit }) => {
     formData.append('medicalSpecialty', medicalSpecialty);
     formData.append('additionalText', additionalText);
 
+    
+
+ 
+  //  for (let [key, value] of formData.entries()) {
+  //     console.log(`${key}: ${value}`);
+  // }
+
+
+
+
+
+
     handleSubmit(formData);
   };
 
