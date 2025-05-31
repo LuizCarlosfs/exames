@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/LuizCarlosfs.github.io/static/css/main.7ae98579.css",
-    "main.js": "/LuizCarlosfs.github.io/static/js/main.5876f7ee.js",
-    "static/js/453.259c1d1c.chunk.js": "/LuizCarlosfs.github.io/static/js/453.259c1d1c.chunk.js",
-    "index.html": "/LuizCarlosfs.github.io/index.html",
-    "main.7ae98579.css.map": "/LuizCarlosfs.github.io/static/css/main.7ae98579.css.map",
-    "main.5876f7ee.js.map": "/LuizCarlosfs.github.io/static/js/main.5876f7ee.js.map",
-    "453.259c1d1c.chunk.js.map": "/LuizCarlosfs.github.io/static/js/453.259c1d1c.chunk.js.map"
+    "main.css": "/exames/static/css/main.7ae98579.css",
+    "main.js": "/exames/static/js/main.c37dd5f2.js",
+    "static/js/453.259c1d1c.chunk.js": "/exames/static/js/453.259c1d1c.chunk.js",
+    "index.html": "/exames/index.html",
+    "main.7ae98579.css.map": "/exames/static/css/main.7ae98579.css.map",
+    "main.c37dd5f2.js.map": "/exames/static/js/main.c37dd5f2.js.map",
+    "453.259c1d1c.chunk.js.map": "/exames/static/js/453.259c1d1c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.7ae98579.css",
-    "static/js/main.5876f7ee.js"
+    "static/js/main.c37dd5f2.js"
   ]
 }
