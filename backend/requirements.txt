@@ -1,0 +1,6 @@
+Flask
+flask-cors
+google-cloud-genai
+PyPDF2
+python-dotenv
+google-cloud-vision # Adicionei esta, caso você planeje OCR no futuro, mas pode remover se não for usar.
