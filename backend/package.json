@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Backend para a aplicação de exames médicos",
-  "main": "server.js",
+  "main": "App.py",
   "scripts": {
-    "start": "node server.js"
+    "start": "python App.py"
   },
   "keywords": [],
   "author": "",
