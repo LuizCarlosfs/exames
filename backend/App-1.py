@@ -2,11 +2,11 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 from datetime import date
-# REMOVIDAS: from google.adk.agents import Agent
-# REMOVIDAS: from google.adk.runners import Runner
-# REMOVIDAS: from google.adk.sessions import InMemorySessionService
-# REMOVIDA: from google.adk.tools import Google Search
-# REMOVIDA: from google.genai import types # Não é mais necessário para este padrão
+from google.adk.agents import Agent
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+from google.adk.tools import google_search
+from google.genai import types
 import textwrap
 import warnings
 import PyPDF2 # Importar PyPDF2 para ler PDFs
@@ -23,44 +23,31 @@ load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
 # Remova a linha abaixo se você estiver usando .env ou variáveis de ambiente externas
 # os.environ["GOOGLE_API_KEY"] = "SUA_CHAVE_AQUI" # COLOQUE SUA CHAVE AQUI, OU USE .env
 
-from google import generativeai as genai # Renomeado para evitar conflito com 'types' se existisse
+from google import genai
 try:
     client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 except Exception as e:
     print(f"Erro ao inicializar o cliente GenAI. Verifique sua GOOGLE_API_KEY: {e}")
-    # Considere encerrar o app ou lidar com isso de forma mais robusta
-    # exit() # Ou alguma outra forma de tratamento
 
-MODEL_ID = "gemini-1.5-flash-latest" # Sugestão: use 'gemini-1.5-flash-latest' ou 'gemini-1.5-pro-latest' para acesso a recursos mais recentes como context window maior. Ou 'gemini-2.0-flash' se for um modelo específico.
+MODEL_ID = "gemini-2.0-flash"
 
-# --- FUNÇÃO AUXILIAR PARA CHAMAR O MODELO GEMINI ---
-# Esta função substitui a lógica do ADK Runner
-def call_gemini_model(instruction_text: str, user_input_text: str, model_id: str) -> str:
-    """
-    Chama o modelo Gemini com uma instrução de sistema e um texto de entrada do usuário.
-    """
-    model_instance = client.get_generative_model(name=model_id)
-    
-    # Combine a instrução do "agente" com a entrada do usuário para formar o prompt completo.
-    # O modelo usará a 'instruction_text' como o papel do "sistema" ou persona.
-    full_prompt_content = textwrap.dedent(f"""
-    {instruction_text}
-    
-    --- INÍCIO DA ENTRADA DO USUÁRIO ---
-    {user_input_text}
-    --- FIM DA ENTRADA DO USUÁRIO ---
-    """)
+def call_agent(agent: Agent, message_text: str) -> str:
+    session_service = InMemorySessionService()
+    session = session_service.create_session(app_name=agent.name, user_id="user1", session_id="session1")
+    runner = Runner(agent=agent, app_name=agent.name, session_service=session_service)
+    content = types.Content(role="user", parts=[types.Part(text=message_text)])
 
-    try:
-        # Para interações simples de prompt/resposta, generate_content é direto
-        response = model_instance.generate_content(full_prompt_content)
-        return response.text # Retorna o texto da resposta
-    except Exception as e:
-        print(f"Erro na chamada do modelo Gemini: {e}")
-        # Retorna uma mensagem de erro para que o frontend possa lidar com ela
-        return f"Erro interno do modelo: {e}. Verifique os logs do backend."
+    final_response = ""
+    for event in runner.run(user_id="user1", session_id="session1", new_message=content):
+        if event.is_final_response():
+          for part in event.content.parts:
+            if part.text is not None:
+              final_response += part.text
+              final_response += "\n"
+    return final_response
 
-# --- FUNÇÃO PARA EXTRAIR TEXTO DE ARQUIVOS ---
+# --- FUNÇÕES DOS AGENTES ---
+
 def extract_text_from_file(file):
     """Extrai texto de um objeto de arquivo (FileStorage)."""
     if file.filename.lower().endswith('.pdf'):
@@ -80,13 +67,14 @@ def extract_text_from_file(file):
     else:
         return f"Tipo de arquivo não suportado para extração de texto: '{file.filename}'"
 
-# --- FUNÇÕES DOS AGENTES (AGORA CHAMANDO DIRETAMENTE O MODELO GEMINI) ---
 
 # AGENTE 1: ANALISADOR/BUSCADOR DE INFORMAÇÕES MÉDICAS
 def agente_buscador(topico, age, gender, medical_specialty, additional_text, all_files_content, data_de_hoje):
-    # A instrução do agente agora é uma string
-    instruction_buscador = """
-     Você é um médico com muitos anos de experiência e um especialista em medicina.
+    buscador = Agent(
+        name="agente_analisador_medico",
+        model=MODEL_ID,
+        instruction=f"""
+        Você é um médico com muitos anos de experiência e um especialista em medicina.
         Sua principal tarefa é analisar detalhadamente as informações de exames fornecidas no 'Tópico Principal/Exame'.
         Use as informações adicionais do paciente (idade, sexo, especialidade médica, texto adicional) e os 'Conteúdos dos Arquivos Anexados' para contextualizar e aprofundar sua análise.
 
@@ -106,15 +94,20 @@ def agente_buscador(topico, age, gender, medical_specialty, additional_text, all
         "ATENÇÃO: Sou uma inteligência artificial e não um médico. Este diagnóstico ou análise é apenas para fins de curiosidade e informação. Consulte sempre um profissional de saúde qualificado para qualquer decisão médica."
 
         Sua resposta deve ser um resumo organizado e analítico dos principais pontos, com base nas informações fornecidas e na sua pesquisa.
-    """
+        """,
+        description="Agente que analisa informações médicas fornecidas pelo usuário.",
+        tools=[google_search]
+    )
 
     # Constrói a mensagem de entrada para o agente com todas as informações
+    # Inclui o conteúdo de todos os arquivos
     files_info_text = "\n".join([
         f"--- INÍCIO DO CONTEÚDO DO ARQUIVO {i+1} ({file_data['filename']}) ---\n{file_data['content']}\n--- FIM DO CONTEÚDO DO ARQUIVO {i+1} ---"
         for i, file_data in enumerate(all_files_content)
     ]) if all_files_content else "Nenhum arquivo anexado ou conteúdo não lido."
 
-    user_input_for_buscador = textwrap.dedent(f"""
+
+    entrada_do_agente_buscador = textwrap.dedent(f"""
     Tópico Principal/Exame: {topico}
     Idade do Paciente: {age if age else 'Não informado'}
     Sexo do Paciente: {gender if gender else 'Não informado'}
@@ -127,62 +120,76 @@ def agente_buscador(topico, age, gender, medical_specialty, additional_text, all
     Data da consulta/análise: {data_de_hoje}
     """)
 
-    # Chamada para o modelo Gemini
-    analise_medica_inicial = call_gemini_model(instruction_buscador, user_input_for_buscador, MODEL_ID)
+    analise_medica_inicial = call_agent(buscador, entrada_do_agente_buscador)
     return analise_medica_inicial
 
-# AGENTE 2: PLANEJADOR DE RELATÓRIO/PARECER MÉDICO
+# AGENTE 2: PLANEJADOR DE RELATÓRIO/PARECER MÉDICO (Adaptação)
 def agente_planejador(topico_original, analise_medica_inicial):
-    instruction_planejador = """
-    Você é um planejador de conteúdo médico. Com base na 'Análise Médica Inicial' fornecida,
-    crie um plano detalhado para um parecer ou relatório médico.
-    O plano deve incluir as seguintes seções bem definidas:
-    1.  **Resumo dos Dados do Paciente e Exames:** Onde serão apresentadas as informações principais fornecidas.
-    2.  **Análise dos Achados Principais:** Detalhar as observações mais relevantes da análise médica.
-    3.  **Informações Complementares da Pesquisa (se houver):** Integrar dados relevantes encontrados pelo Agente 1 (simulando pesquisa).
-    4.  **Considerações Finais e Observações:** Um espaço para conclusões cautelosas e a **ênfase obrigatória** sobre a natureza da análise (IA, não substitui médico).
+    planejador = Agent(
+        name="agente_planejador_relatorio_medico",
+        model=MODEL_ID,
+        instruction=f"""
+        Você é um planejador de conteúdo médico. Com base na 'Análise Médica Inicial' fornecida pelo Agente 1,
+        crie um plano detalhado para um parecer ou relatório médico.
+        O plano deve incluir as seguintes seções bem definidas:
+        1.  **Resumo dos Dados do Paciente e Exames:** Onde serão apresentadas as informações principais fornecidas.
+        2.  **Análise dos Achados Principais:** Detalhar as observações mais relevantes da análise médica.
+        3.  **Informações Complementares da Pesquisa (se houver):** Integrar dados relevantes encontrados pelo Agente 1 via google_search.
+        4.  **Considerações Finais e Observações:** Um espaço para conclusões cautelosas e a **ênfase obrigatória** sobre a natureza da análise (IA, não substitui médico).
 
-    Seu objetivo é organizar o conteúdo de forma lógica e clara para a redação do parecer final.
-    """
-    user_input_for_planejador = f"Tópico Original: {topico_original}\nAnálise Médica Inicial: {analise_medica_inicial}"
-    plano_do_relatorio = call_gemini_model(instruction_planejador, user_input_for_planejador, MODEL_ID)
+        Seu objetivo é organizar o conteúdo de forma lógica e clara para a redação do parecer final.
+        """,
+        description="Agente que planeja a estrutura de um parecer/relatório médico.",
+    )
+    entrada_do_agente_planejador = f"Tópico Original: {topico_original}\nAnálise Médica Inicial: {analise_medica_inicial}"
+    plano_do_relatorio = call_agent(planejador, entrada_do_agente_planejador)
     return plano_do_relatorio
 
-# AGENTE 3: REDATOR DO RELATÓRIO/PARECER MÉDICO
+# AGENTE 3: REDATOR DO RELATÓRIO/PARECER MÉDICO (Adaptação)
 def agente_redator(topico_original, plano_de_relatorio):
-    instruction_redator = """
-    Você é um Redator Médico com experiência em criar relatórios e pareceres médicos claros, objetivos e profissionais.
-    Utilize o 'Plano de Relatório' fornecido para escrever um rascunho completo de um parecer/relatório médico.
-    **Mantenha um tom estritamente profissional e informativo.**
-    **É ABSOLUTAMENTE ESSENCIAL INCLUIR NO INÍCIO OU FINAL DO PARECER A SEGUINTE NOTA:**
-    "ATENÇÃO: Este parecer foi gerado por Inteligência Artificial e não substitui a consulta, diagnóstico ou tratamento médico por um profissional de saúde qualificado. É apenas para fins informativos e de curiosidade."
+    redator = Agent(
+        name="agente_redator_relatorio_medico",
+        model=MODEL_ID,
+        instruction=f"""
+            Você é um Redator Médico com experiência em criar relatórios e pareceres médicos claros, objetivos e profissionais.
+            Utilize o 'Plano de Relatório' fornecido para escrever um rascunho completo de um parecer/relatório médico.
+            **Mantenha um tom estritamente profissional e informativo.**
+            **É ABSOLUTAMENTE ESSENCIAL INCLUIR NO INÍCIO OU FINAL DO PARECER A SEGUINTE NOTA:**
+            "ATENÇÃO: Este parecer foi gerado por Inteligência Artificial e não substitui a consulta, diagnóstico ou tratamento médico por um profissional de saúde qualificado. É apenas para fins informativos e de curiosidade."
 
-    Não faça diagnósticos diretos nem prescreva tratamentos. Apenas compile e apresente as informações de forma estruturada conforme o plano.
-    """
-    user_input_for_redator = f"Tópico Original: {topico_original}\nPlano de Relatório: {plano_de_relatorio}"
-    rascunho_do_relatorio = call_gemini_model(instruction_redator, user_input_for_redator, MODEL_ID)
+            Não faça diagnósticos diretos nem prescreva tratamentos. Apenas compile e apresente as informações de forma estruturada conforme o plano.
+            """,
+        description="Agente redator de pareceres/relatórios médicos."
+    )
+    entrada_do_agente_redator = f"Tópico Original: {topico_original}\nPlano de Relatório: {plano_de_relatorio}"
+    rascunho_do_relatorio = call_agent(redator, entrada_do_agente_redator)
     return rascunho_do_relatorio
 
-# AGENTE 4: REVISOR DE QUALIDADE DO RELATÓRIO/PARECER MÉDICO
+# AGENTE 4: REVISOR DE QUALIDADE DO RELATÓRIO/PARECER MÉDICO (Adaptação)
 def agente_revisor(topico_original, rascunho_gerado):
-    instruction_revisor = """
-    Você é um Editor e Revisor de Conteúdo médico meticuloso, com foco em clareza, precisão e adequação ética.
-    Revise o rascunho do parecer/relatório médico abaixo sobre o 'Tópico Original', verificando:
-    1.  **Clareza e Concisão:** O texto é fácil de entender e vai direto ao ponto?
-    2.  **Precisão:** As informações estão corretas com base no que foi fornecido (sem inventar dados)?
-    3.  **Aviso Legal:** Verifique se o aviso legal sobre ser uma IA (e não um substituto médico) está presente e em destaque. Se não estiver, adicione-o no início ou final do texto final.
-    4.  **Não Diagnóstico/Tratamento:** Garanta que não há diagnósticos diretos, prescrições de tratamento ou conselhos médicos explícitos.
-    5.  **Gramática e Formatação:** Corrija quaisquer erros gramaticais, de ortografia ou formatação.
+    revisor = Agent(
+        name="agente_revisor_medico_final",
+        model=MODEL_ID,
+        instruction=f"""
+            Você é um Editor e Revisor de Conteúdo médico meticuloso, com foco em clareza, precisão e adequação ética.
+            Revise o rascunho do parecer/relatório médico abaixo sobre o 'Tópico Original', verificando:
+            1.  **Clareza e Concisão:** O texto é fácil de entender e vai direto ao ponto?
+            2.  **Precisão:** As informações estão corretas com base no que foi fornecido (sem inventar dados)?
+            3.  **Aviso Legal:** Verifique se o aviso legal sobre ser uma IA (e não um substituto médico) está presente e em destaque. Se não estiver, adicione-o no início ou final do texto final.
+            4.  **Não Diagnóstico/Tratamento:** Garanta que não há diagnósticos diretos, prescrições de tratamento ou conselhos médicos explícitos.
+            5.  **Gramática e Formatação:** Corrija quaisquer erros gramaticais, de ortografia ou formatação.
 
-    Se o rascunho estiver pronto e atender a todos os critérios (especialmente o aviso legal e a ausência de diagnóstico direto), responda apenas:
-    'O parecer está ótimo e pronto para ser revisado por um profissional humano!'
+            Se o rascunho estiver pronto e atender a todos os critérios (especialmente o aviso legal e a ausência de diagnóstico direto), responda apenas:
+            'O parecer está ótimo e pronto para ser revisado por um profissional humano!'
 
-    Caso haja problemas, aponte-os e sugira melhorias.
-    Em todos os casos, antes de transcrever o texto final revisado, coloque a frase:
-    ***Texto final revisado:***
-    """
-    user_input_for_revisor = f"Tópico Original: {topico_original}\nRascunho: {rascunho_gerado}"
-    texto_revisado = call_gemini_model(instruction_revisor, user_input_for_revisor, MODEL_ID)
+            Caso haja problemas, aponte-os e sugira melhorias.
+            Em todos os casos, antes de transcrever o texto final revisado, coloque a frase:
+            ***Texto final revisado:***
+            """,
+        description="Agente revisor de pareceres/relatórios médicos, com foco ético e legal."
+    )
+    entrada_do_agente_revisor = f"Tópico Original: {topico_original}\nRascunho: {rascunho_gerado}"
+    texto_revisado = call_agent(revisor, entrada_do_agente_revisor)
     return texto_revisado
 
 # --- ROTA PRINCIPAL DA API ---
@@ -203,13 +210,8 @@ def generate_post():
     # Coleciona o conteúdo de TODOS os arquivos
     all_files_content = []
     # Itera sobre os arquivos nomeados 'file0', 'file1', etc.
-    # request.files é um ImmutableMultiDict, que contém todos os arquivos enviados
     for key, file in request.files.items():
-        # O frontend envia os arquivos como 'file0', 'file1', etc.
-        # Mas o Flask pode recebê-los com o nome original do campo no formulário.
-        # Para ser mais robusto, podemos iterar sobre todos os arquivos que não são outros campos.
-        # No entanto, se você está usando a lógica do TopicForm.js, eles virão como 'fileX'.
-        if key.startswith('file'):
+        if key.startswith('file'): # Verifica se a chave corresponde ao padrão de nomeação
             extracted_content = extract_text_from_file(file)
             all_files_content.append({
                 'filename': file.filename,
