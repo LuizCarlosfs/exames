@@ -2,7 +2,7 @@
   "name": "exames",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://github.com/LuizCarlosfs.github.io",
+  "homepage": "https://luizcarlosfs.github.io/exames/",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@testing-library/dom": "^10.4.0",
