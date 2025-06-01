@@ -23,26 +23,35 @@ load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
 # Remova a linha abaixo se você estiver usando .env ou variáveis de ambiente externas
 # os.environ["GOOGLE_API_KEY"] = "SUA_CHAVE_AQUI" # COLOQUE SUA CHAVE AQUI, OU USE .env
 
-from google import generativeai as genai # Renomeado para evitar conflito com 'types' se existisse
+
+from google import generativeai as genai
+
+# Configura a chave da API do Google Gemini
 try:
-    client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+    genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 except Exception as e:
-    print(f"Erro ao inicializar o cliente GenAI. Verifique sua GOOGLE_API_KEY: {e}")
-    # Considere encerrar o app ou lidar com isso de forma mais robusta
-    # exit() # Ou alguma outra forma de tratamento
+    print(f"Erro ao configurar a API Key do GenAI: {e}")
+    # Se a chave da API não estiver configurada, o app não vai funcionar.
+    # Considere encerrar o app ou lidar com isso de forma mais robusta.
+    # exit()
+
+# Não há um 'client' global como antes com a ADK.
+# Os modelos são acessados diretamente via genai.GenerativeModel ou dentro das funções dos agentes.
 
 MODEL_ID = "gemini-1.5-flash-latest" # Sugestão: use 'gemini-1.5-flash-latest' ou 'gemini-1.5-pro-latest' para acesso a recursos mais recentes como context window maior. Ou 'gemini-2.0-flash' se for um modelo específico.
 
 # --- FUNÇÃO AUXILIAR PARA CHAMAR O MODELO GEMINI ---
 # Esta função substitui a lógica do ADK Runner
+
+# --- FUNÇÃO AUXILIAR PARA CHAMAR O MODELO GEMINI ---
 def call_gemini_model(instruction_text: str, user_input_text: str, model_id: str) -> str:
     """
     Chama o modelo Gemini com uma instrução de sistema e um texto de entrada do usuário.
     """
-    model_instance = client.get_generative_model(name=model_id)
+    # Cria uma instância do modelo GenerativeModel
+    model_instance = genai.GenerativeModel(model_id) # MUDANÇA AQUI
     
     # Combine a instrução do "agente" com a entrada do usuário para formar o prompt completo.
-    # O modelo usará a 'instruction_text' como o papel do "sistema" ou persona.
     full_prompt_content = textwrap.dedent(f"""
     {instruction_text}
     
@@ -52,13 +61,12 @@ def call_gemini_model(instruction_text: str, user_input_text: str, model_id: str
     """)
 
     try:
-        # Para interações simples de prompt/resposta, generate_content é direto
         response = model_instance.generate_content(full_prompt_content)
-        return response.text # Retorna o texto da resposta
+        return response.text
     except Exception as e:
         print(f"Erro na chamada do modelo Gemini: {e}")
-        # Retorna uma mensagem de erro para que o frontend possa lidar com ela
         return f"Erro interno do modelo: {e}. Verifique os logs do backend."
+
 
 # --- FUNÇÃO PARA EXTRAIR TEXTO DE ARQUIVOS ---
 def extract_text_from_file(file):
@@ -89,10 +97,10 @@ def agente_buscador(topico, age, gender, medical_specialty, additional_text, all
      Você é um médico com muitos anos de experiência e um especialista em medicina.
         Sua principal tarefa é analisar detalhadamente as informações de exames fornecidas no 'Tópico Principal/Exame'.
         Use as informações adicionais do paciente (idade, sexo, especialidade médica, texto adicional) e os 'Conteúdos dos Arquivos Anexados' para contextualizar e aprofundar sua análise.
-
-        Você deve utilizar a ferramenta de busca do Google (google_search) para encontrar informações médicas complementares, dados sobre doenças, tratamentos, ou artigos científicos relevantes que ajudem a compreender melhor os resultados dos exames e as condições do paciente.
-
-        Seu objetivo é fornecer uma análise abrangente e embasada. Não invente informações ou faça diagnósticos diretos. Foque em:
+      
+        Você deve considerar a busca por informações médicas complementares, dados sobre doenças, tratamentos, ou artigos científicos relevantes que ajudem a compreender melhor os resultados dos exames e as condições do paciente. Embora eu não tenha acesso direto à internet para fazer buscas, você pode simular a consulta a conhecimentos médicos aprofundados com base na sua vasta base de dados.
+            
+        Seu objetivo é fornecer uma análise abrangente e embasada. Não invente informações. Foque em:
         1.  **Contextualização dos Dados:** Relacione os dados do paciente com as informações dos exames.
         2.  **Busca de Informações Relevantes:** Utilize a ferramenta google_search para encontrar dados adicionais que possam enriquecer sua análise.
         3.  **Organização Clara:** Estruture sua resposta de forma lógica, com seções claras e objetivas.   
