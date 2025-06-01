@@ -3,4 +3,5 @@ flask-cors
 google-generativeai
 PyPDF2
 python-dotenv
-google-cloud-vision # Adicionei esta, caso você planeje OCR no futuro, mas pode remover se não for usar.
+gunicorn # Adicione esta linha
+# google-cloud-vision (opcional, se estiver usando)
