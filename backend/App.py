@@ -14,8 +14,6 @@ from dotenv import load_dotenv # Importar para carregar variáveis de ambiente
 
 warnings.filterwarnings("ignore")
 
-app = Flask(__name__)
-from flask_cors import CORS
 
 app = Flask(__name__)
 # CORS(app, resources={r"/*": {"origins": "https://luizcarlosfs.github.io"}})
