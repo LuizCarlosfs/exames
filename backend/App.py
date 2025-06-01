@@ -244,6 +244,8 @@ def generate_post():
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
+     # Este bloco só é executado quando você roda `python App.py` localmente
+    # e não será usado pelo Gunicorn no Render.
     if not os.getenv("GOOGLE_API_KEY"):
         print("ERRO: A variável de ambiente GOOGLE_API_KEY não está configurada.")
         print("Defina-a no seu arquivo .env ou diretamente no ambiente.")
