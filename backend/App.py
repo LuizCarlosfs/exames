@@ -18,7 +18,12 @@ app = Flask(__name__)
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://luizcarlosfs.github.io"}})
+# CORS(app, resources={r"/*": {"origins": "https://luizcarlosfs.github.io"}})
+CORS(app, resources={r"/*": {"origins": [
+    "http://localhost:3000",
+    "https://luizcarlosfs.github.io"
+]}})
+
 # OU, para permitir múltiplas origens ou todas (menos recomendado para produção):
 # CORS(app, origins=["https://luizcarlosfs.github.io", "http://localhost:3000"]) # Para testar localmente também
 
