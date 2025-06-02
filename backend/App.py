@@ -28,6 +28,8 @@ def home():
 
 # ... (Suas outras rotas, como @app.route('/generate-post', methods=['POST'])) ...
 
+CORS(app)
+
 #CORS(app, resources={r"/*": {"origins": "https://luizcarlosfs.github.io"
 }})
 
@@ -35,11 +37,13 @@ def home():
 #     "http://localhost:3000",
 #     "https://luizcarlosfs.github.io"
 # ]}})
-CORS(app, resources={r"/*": {"origins": [
-    "http://localhost:3000",
-    "https://luizcarlosfs.github.io",
-    "*" # Adicione o curinga aqui para permitir todas as outras origens
-]}})
+
+# CORS(app, resources={r"/*": {"origins": [
+#     "http://localhost:3000",
+#     "https://luizcarlosfs.github.io",
+#     "*" # Adicione o curinga aqui para permitir todas as outras origens
+# ]}})
+
 
 load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
 
