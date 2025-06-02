@@ -1,21 +1,15 @@
 
-# Appy.py - 02/06/2025
+# Appy.py - 02/06/2025 - 13:04h
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 from datetime import date
-# REMOVIDAS: from google.adk.agents import Agent
-# REMOVIDAS: from google.adk.runners import Runner
-# REMOVIDAS: from google.adk.sessions import InMemorySessionService
-# REMOVIDA: from google.adk.tools import Google Search
-# REMOVIDA: from google.genai import types # Não é mais necessário para este padrão
 import textwrap
 import warnings
 import PyPDF2 # Importar PyPDF2 para ler PDFs
 from dotenv import load_dotenv # Importar para carregar variáveis de ambiente
 
 warnings.filterwarnings("ignore")
-
 
 app = Flask(__name__)
 
@@ -64,7 +58,6 @@ MODEL_ID = "gemini-1.5-flash-latest" # Sugestão: use 'gemini-1.5-flash-latest' 
 # --- FUNÇÃO AUXILIAR PARA CHAMAR O MODELO GEMINI ---
 # Esta função substitui a lógica do ADK Runner
 
-# --- FUNÇÃO AUXILIAR PARA CHAMAR O MODELO GEMINI ---
 def call_gemini_model(instruction_text: str, user_input_text: str, model_id: str) -> str:
     """
     Chama o modelo Gemini com uma instrução de sistema e um texto de entrada do usuário.

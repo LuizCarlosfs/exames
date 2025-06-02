@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <footer className='App-footer'>
       <p>
-        &copy; 2025 Gerador de Posts de IA. Desenvolvido com Google Gemini.
+        &copy; 2025 Desenvolvido com Google Gemini.
       </p>
     </footer>
   );
