@@ -10,7 +10,12 @@ import PyPDF2
 from dotenv import load_dotenv 
 
 # Configuração CORS para permitir apenas a origem específica do seu frontend
-CORS(app, resources={r"/*": {"origins": "https://luizcarlosfs.github.io/exames"}})
+# CORS(app, resources={r"/*": {"origins": [
+#     "http://localhost:3000",                  # Para desenvolvimento local
+#     "https://luizcarlosfs.github.io/exames"   # Para o frontend publicado
+# ]}})
+
+CORS(app, origins= "https://luizcarlosfs.github.io/exames") # Permite apenas a origem específica
 
 
 warnings.filterwarnings("ignore")
