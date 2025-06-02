@@ -18,7 +18,17 @@ warnings.filterwarnings("ignore")
 
 
 app = Flask(__name__)
-# CORS(app, resources={r"/*": {"origins": "https://luizcarlosfs.github.io"}})
+
+@app.route('/')
+def home():
+    """
+    Rota inicial para verificar se o backend está funcionando.
+    """
+    return "Bem-vindo ao Backend do Gerador de Posts de IA! Acesse /generate-post para usar a API."
+
+# ... (Suas outras rotas, como @app.route('/generate-post', methods=['POST'])) ...
+
+
 CORS(app, resources={r"/*": {"origins": [
     "http://localhost:3000",
     "https://luizcarlosfs.github.io"
