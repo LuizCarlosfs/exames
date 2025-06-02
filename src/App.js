@@ -10,7 +10,7 @@ import LoadingAndErrorDisplay from "./components/LoadingAndErrorDisplay"
 import ResultsDisplay from "./components/ResultsDisplay"
 import Footer from "./components/Footer"
 
-header(header:'Access-Control-Allow-Origin: https://luizcarlosfs.github.io/exames')
+
 
 function App() {
   const [topic, setTopic] = useState("")

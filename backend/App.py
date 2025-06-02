@@ -6,8 +6,9 @@ import os
 from datetime import date
 import textwrap
 import warnings
-import PyPDF2 # Importar PyPDF2 para ler PDFs
-from dotenv import load_dotenv # Importar para carregar variáveis de ambiente
+import PyPDF2  
+from dotenv import load_dotenv 
+header(header:'Access-Control-Allow-Origin: https://luizcarlosfs.github.io/exames')
 
 warnings.filterwarnings("ignore")
 
