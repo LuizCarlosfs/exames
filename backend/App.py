@@ -1,3 +1,5 @@
+
+# Appy.py - 02/06/2025
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
@@ -22,15 +24,7 @@ CORS(app, resources={r"/*": {"origins": [
     "https://luizcarlosfs.github.io"
 ]}})
 
-# OU, para permitir múltiplas origens ou todas (menos recomendado para produção):
-# CORS(app, origins=["https://luizcarlosfs.github.io", "http://localhost:3000"]) # Para testar localmente também
-
 load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
-
-# Certifique-se de que sua GOOGLE_API_KEY está configurada no seu ambiente
-# Remova a linha abaixo se você estiver usando .env ou variáveis de ambiente externas
-# os.environ["GOOGLE_API_KEY"] = "SUA_CHAVE_AQUI" # COLOQUE SUA CHAVE AQUI, OU USE .env
-
 
 from google import generativeai as genai
 
