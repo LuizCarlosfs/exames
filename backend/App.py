@@ -34,7 +34,7 @@ def home():
 
 CORS(app, resources={r"/*": {"origins": [
     "http://localhost:3000",
-    "https://luizcarlosfs.github.io"
+    "https://luizcarlosfs.github.io/exames"
 ]}})
 
 
