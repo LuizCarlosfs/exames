@@ -8,7 +8,10 @@ import textwrap
 import warnings
 import PyPDF2  
 from dotenv import load_dotenv 
-header(header:'Access-Control-Allow-Origin: https://luizcarlosfs.github.io/exames')
+
+# Configuração CORS para permitir apenas a origem específica do seu frontend
+CORS(app, resources={r"/*": {"origins": "https://luizcarlosfs.github.io/exames"}})
+
 
 warnings.filterwarnings("ignore")
 
