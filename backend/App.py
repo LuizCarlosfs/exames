@@ -32,18 +32,13 @@ def home():
 
 # CORS(app)
 
-# CORS(app, resources={r"/*": {"origins": [
-#     "http://localhost:3000",
-#     "https://luizcarlosfs.github.io"
-# ]}})
+CORS(app, resources={r"/*": {"origins": [
+    "http://localhost:3000",
+    "https://luizcarlosfs.github.io"
+]}})
 
-# CORS(app, resources={r"/*": {"origins": [
-#     "http://localhost:3000",
-#     "https://luizcarlosfs.github.io",
-#     "*" # Adicione o curinga aqui para permitir todas as outras origens
-# ]}})
 
-CORS(app, origins='*') 
+# CORS(app, origins='*') 
 
 load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
 
