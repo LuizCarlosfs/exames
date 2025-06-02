@@ -15,7 +15,6 @@ from dotenv import load_dotenv
 #     "https://luizcarlosfs.github.io/exames"   # Para o frontend publicado
 # ]}})
 
-CORS(app, origins= "https://luizcarlosfs.github.io/exames") # Permite apenas a origem específica
 
 
 warnings.filterwarnings("ignore")
