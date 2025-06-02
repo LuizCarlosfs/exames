@@ -10,17 +10,6 @@ import LoadingAndErrorDisplay from "./components/LoadingAndErrorDisplay"
 import ResultsDisplay from "./components/ResultsDisplay"
 import Footer from "./components/Footer"
 
-// REMOVA TODO O CÓDIGO ABAIXO QUE PERTENCE AO EXPRESS:
-// const express = require("express")
-// const app = express()
-// const port = process.env.PORT || 10000
-// app.get("/", (req, res) => {
-//   res.send("Hello World!")
-// })
-// app.listen(port, () => {
-//   console.log(`Example app listening on port ${port}`)
-// })
-// --- fim import express
 
 function App() {
   const [topic, setTopic] = useState("")
