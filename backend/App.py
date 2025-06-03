@@ -9,7 +9,6 @@ import warnings
 import PyPDF2  
 from dotenv import load_dotenv 
 
-
 warnings.filterwarnings("ignore")
 
 app = Flask(__name__)
@@ -25,13 +24,13 @@ def home():
 
 # CORS(app)
 
-CORS(app, resources={r"/*": {"origins": [
-    "http://localhost:3000",
-    "https://luizcarlosfs.github.io"  # Origem correta
-]}})
+# CORS(app, resources={r"/*": {"origins": [
+#     "http://localhost:3000",
+#     "https://luizcarlosfs.github.io"  # Origem correta
+# ]}})
 
 
-#CORS(app, origins='*') 
+CORS(app, origins='*') 
 
 load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
 
