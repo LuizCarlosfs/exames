@@ -29,7 +29,6 @@ def home():
 #     "https://luizcarlosfs.github.io"  # Origem correta
 # ]}})
 
-
 CORS(app, origins='*') 
 
 load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
