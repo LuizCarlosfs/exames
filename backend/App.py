@@ -1,5 +1,5 @@
 
-# Appy.py - 02/06/2025 - 13:04h
+# Appy.py - 10/06/2025 - 13:04h
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
@@ -8,6 +8,8 @@ import textwrap
 import warnings
 import PyPDF2  
 from dotenv import load_dotenv 
+from config import *
+
 
 warnings.filterwarnings("ignore")
 
@@ -24,12 +26,13 @@ def home():
 
 # CORS(app)
 
-# CORS(app, resources={r"/*": {"origins": [
-#     "http://localhost:3000",
-#     "https://luizcarlosfs.github.io"  # Origem correta
-# ]}})
+CORS(app, resources={r"/*": {"origins": [
+    "http://localhost:3000",
+    "https://luizcarlosfs.github.io"  # Origem correta
+]}})
 
-CORS(app, origins='*') 
+# CORS(app, origins='*') 
+
 
 load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
 
